@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 
 @Injectable()
-export class AppService {
+export class AwsService {
   getHello(): string {
     return 'Hello World!';
   }

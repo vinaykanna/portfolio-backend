@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Storage {
+  id        Int         @id @default(autoincrement())
+  uid       String?     @unique @default(uuid())
+  name      String
+  type      StorageType
+  file      String?
+  mimeType  String?     @map("mime_type")
+  size      Int?
+  parentId  Int?
+  parent    Storage?    @relation("Parent", fields: [parentId], references: [id])
+  children  Storage[]   @relation("Parent")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  @@map("storage")
+}
+
+enum StorageType {
+  FOLDER
+  FILE
+}
