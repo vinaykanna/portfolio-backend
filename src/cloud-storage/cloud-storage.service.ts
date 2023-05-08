@@ -145,4 +145,14 @@ export class CloudStorageService {
 
     return storage;
   }
+
+  async getTotalStorageSize() {
+    const totalSize = await this.prisma.storage.aggregate({
+      _sum: {
+        size: true,
+      },
+    });
+
+    return totalSize._sum;
+  }
 }

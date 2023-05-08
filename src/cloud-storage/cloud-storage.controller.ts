@@ -31,6 +31,11 @@ export class CloudStorageController {
     return this.service.createFolder(body);
   }
 
+  @Get('/total-storage-size')
+  getTotalStorageSize() {
+    return this.service.getTotalStorageSize();
+  }
+
   @Post('/upload-file')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(

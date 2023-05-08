@@ -16,7 +16,7 @@ model Storage {
   mimeType  String?     @map("mime_type")
   size      Int?
   parentId  Int?
-  parent    Storage?    @relation("Parent", fields: [parentId], references: [id])
+  parent    Storage?    @relation("Parent", fields: [parentId], references: [id], onDelete: Cascade)
   children  Storage[]   @relation("Parent")
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
