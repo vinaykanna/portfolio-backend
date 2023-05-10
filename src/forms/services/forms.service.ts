@@ -14,10 +14,21 @@ import { UpdateFieldDto } from '../dto/update-field.dto';
 import { UpdatePageDto } from '../dto/update-page.dto';
 import { Form, FormDocument } from '../schemas/form.schema';
 import { Page } from '../schemas/page.schema';
+import { AwsService } from 'src/cloud-storage/aws.service';
+import { UploadRes } from 'src/cloud-storage/cloud-storage.service';
+import {
+  FormResponse,
+  FormResponseDocument,
+} from '../schemas/form-response.schema';
 
 @Injectable()
 export class FormsService {
-  constructor(@InjectModel(Form.name) private formModel: Model<FormDocument>) {}
+  constructor(
+    @InjectModel(Form.name) private formModel: Model<FormDocument>,
+    @InjectModel(FormResponse.name)
+    private formResponseModel: Model<FormResponseDocument>,
+    private awsService: AwsService,
+  ) {}
 
   async createForm(data: CreateFormDto) {
     try {
@@ -251,5 +262,40 @@ export class FormsService {
 
     field.deleteOne();
     return form.save();
+  }
+
+  async uploadFile(file: Express.Multer.File) {
+    try {
+      let upload: UploadRes = await this.awsService.upload(file);
+      return upload;
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException(err);
+    }
+  }
+
+  async submitResponse(formId: string, data: any) {
+    const formResponse = new this.formResponseModel({
+      formId,
+      response: data,
+    });
+
+    await formResponse.save();
+    return formResponse;
+  }
+
+  async getFormResponses(formId: string) {
+    let form = await this.formModel.findById(formId);
+
+    if (!form) {
+      throw new BadRequestException('Form not found');
+    }
+
+    let responses = await this.formResponseModel.find({ formId });
+
+    return {
+      formDetails: form,
+      responses,
+    };
   }
 }

@@ -7,6 +7,8 @@ import {
   Patch,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AddFieldDto } from '../dto/add-field.dto';
 import { AddPageDto } from '../dto/add-page.dto';
@@ -15,6 +17,7 @@ import CreateFormDto, { UpdateFormDto } from '../dto/create-form.dto';
 import { UpdateFieldDto } from '../dto/update-field.dto';
 import { UpdatePageDto } from '../dto/update-page.dto';
 import { FormsService } from '../services/forms.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('forms')
 export class FormsController {
@@ -28,6 +31,22 @@ export class FormsController {
   @Get()
   async getForms() {
     return this.service.getAllForms();
+  }
+
+  @Post('/upload-file')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.service.uploadFile(file);
+  }
+
+  @Post(':id/submit-response')
+  async submitResponse(@Param('id') id: string, @Body() body: any) {
+    return this.service.submitResponse(id, body);
+  }
+
+  @Get(':id/responses')
+  async getFormRespones(@Param('id') id: string) {
+    return this.service.getFormResponses(id);
   }
 
   @Put(':id')

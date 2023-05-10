@@ -20,7 +20,7 @@ interface IUpload {
   body: IUploadBody;
 }
 
-type UploadRes = S3.ManagedUpload.SendData;
+export type UploadRes = S3.ManagedUpload.SendData;
 
 @Injectable()
 export class CloudStorageService {
